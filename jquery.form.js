@@ -324,7 +324,7 @@ $.fn.ajaxSubmit = function(options) {
 						// account for browsers injecting pre around json response
 						var pre = doc.getElementsByTagName('pre')[0];
 						if (pre)
-							xhr.responseText = pre.innerHTML;
+								xhr.responseText = pre.innerText; // Fixes escaping problems 
 					}			  
 				}
 				else if (opts.dataType == 'xml' && !xhr.responseXML && xhr.responseText != null) {
