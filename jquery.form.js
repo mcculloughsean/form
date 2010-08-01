@@ -229,6 +229,7 @@ $.fn.ajaxSubmit = function(options) {
 
 		// take a breath so that pending repaints get some cpu time before the upload starts
 		function doSubmit() {
+
 			// make sure form attrs are set
 			var t = $form.attr('target'), a = $form.attr('action');
 
@@ -307,14 +308,15 @@ $.fn.ajaxSubmit = function(options) {
 				}
 
 				log('response detected');
+					
 				cbInvoked = true;
-				xhr.responseText = doc.body ? doc.body.innerHTML : null;
+				xhr.responseText = doc.body ? doc.body.innerHTML : doc;
 				xhr.responseXML = doc.XMLDocument ? doc.XMLDocument : doc;
+				
 				xhr.getResponseHeader = function(header){
 					var headers = {'content-type': opts.dataType};
 					return headers[header];
 				};
-
 				if (opts.dataType == 'json' || opts.dataType == 'script') {
 					// see if user embedded response in textarea
 					var ta = doc.getElementsByTagName('textarea')[0];
@@ -324,12 +326,16 @@ $.fn.ajaxSubmit = function(options) {
 						// account for browsers injecting pre around json response
 						var pre = doc.getElementsByTagName('pre')[0];
 						if (pre)
-								xhr.responseText = pre.innerText; // Fixes escaping problems 
+						  if (pre.innerHTML)
+						     xhr.responseText = pre.innerHTML
+						   else  
+							xhr.responseText = pre.innerText; // Research me 
 					}			  
 				}
 				else if (opts.dataType == 'xml' && !xhr.responseXML && xhr.responseText != null) {
 					xhr.responseXML = toXml(xhr.responseText);
 				}
+					  
 				data = $.httpData(xhr, opts.dataType);
 			}
 			catch(e){
